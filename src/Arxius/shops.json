@@ -1,0 +1,44 @@
+[
+  {
+    "name": "elCofre Copy Shop",
+    "description": "We specialize in 3D printing, which is the future.",
+    "since": 1973,
+    "earnings": 27023.08,
+    "businessModel": "LOYALTY",
+    "catalogue": [
+      {
+        "nom": "Xuixo de Crema",
+        "marca": "Viladrau Bakery",
+        "preu": 4.33
+      }
+    ]
+  },
+  {
+    "name": "Queviures Groceries",
+    "description": "We sell fresh-baked (or practically fresh-baked) xuixos.",
+    "since": 2022,
+    "earnings": 979854.77,
+    "businessModel": "MAX_PROFIT",
+    "catalogue": [
+      {
+        "nom": "caca",
+        "marca": "Holaa",
+        "preu": 2.5
+      }
+    ]
+  },
+  {
+    "name": "VM Cinema",
+    "description": "The leading platform for independent comedy sketches.",
+    "since": 2006,
+    "earnings": 2.13,
+    "businessModel": "SPONSORED",
+    "catalogue": [
+      {
+        "nom": "holaa",
+        "marca": "Dfdfdjjj Jdjdjjsa",
+        "preu": 1.43
+      }
+    ]
+  }
+]
