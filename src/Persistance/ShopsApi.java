@@ -2,6 +2,7 @@ package Persistance;
 
 import Business.ProducteCataleg;
 import Business.Tenda;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -65,18 +66,21 @@ public class ShopsApi implements ShopsDAO{
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
 
+            // Convertir el objeto Tenda a JSON
+            JsonObject jsonObject = tenda.toJsonObject();
+            Gson gson = new Gson();
+            String jsonInputString = gson.toJson(jsonObject);
+
             // Enviar el cuerpo del mensaje
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.writeBytes(tenda.toString());
+                wr.writeBytes(jsonInputString);
                 wr.flush();
             }
 
             // Obtener el código de respuesta
             int responseCode = connection.getResponseCode();
 
-
             connection.disconnect();
-
 
             if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
                 System.out.println("La solicitud POST fue exitosa.");
@@ -91,6 +95,7 @@ public class ShopsApi implements ShopsDAO{
         }
         return false;
     }
+
 
     @Override
     public boolean consistenciaPreu(String nomT, String nomP, float preuNou) {
