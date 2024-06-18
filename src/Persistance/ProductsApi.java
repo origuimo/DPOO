@@ -341,7 +341,7 @@ public class ProductsApi implements ProductsDAO{
                 if (name.equals(nomProducte)) {
                     JsonArray valoracion = producte.get("reviews").getAsJsonArray();
                     valoracion.add(valoracio.toJsonObject());
-                    afegirProducteV(producte, i);
+                    afegirProducteV(producte);
 
                 }
             }
@@ -351,10 +351,11 @@ public class ProductsApi implements ProductsDAO{
         }
     }
 
-    private void afegirProducteV(JsonObject producte, int pos) {
+    private void afegirProducteV(JsonObject producte) {
         try {
-            // Crear la URL
-            URL url = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/products/" + pos);
+            // URL para agregar un nuevo producto
+            String id = "S1-Project_115"; // Aquí debes colocar el ID correcto de tu proyecto
+            URL url = new URL("https://balandrau.salle.url.edu/dpoo/" + id + "/products");
 
             // Abrir conexión
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -364,18 +365,27 @@ public class ProductsApi implements ProductsDAO{
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
 
-            // Enviar el cuerpo del mensaje
-            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.writeBytes(producte.toString());
-                wr.flush();
+            // Enviar el cuerpo del mensaje (nuevo producto)
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = producte.toString().getBytes("utf-8");
+                os.write(input, 0, input.length);
             }
 
             // Obtener el código de respuesta
             int responseCode = connection.getResponseCode();
 
+            // Leer la respuesta (opcional)
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine = null;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                System.out.println("Respuesta del servidor: " + response.toString());
+            }
 
+            // Cerrar la conexión
             connection.disconnect();
-
 
             if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
                 System.out.println("La solicitud POST fue exitosa.");
@@ -383,8 +393,9 @@ public class ProductsApi implements ProductsDAO{
                 System.out.println("La solicitud POST falló. Código de respuesta: " + responseCode);
             }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }
