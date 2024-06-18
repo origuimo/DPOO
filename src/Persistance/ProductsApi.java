@@ -65,9 +65,13 @@ public class ProductsApi implements ProductsDAO{
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
 
+            JsonObject jsonObject = producte.toJsonObject();
+            Gson gson = new Gson();
+            String jsonInputString = gson.toJson(jsonObject);
+
             // Enviar el cuerpo del mensaje
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.writeBytes(producte.toString());
+                wr.writeBytes(jsonInputString);
                 wr.flush();
             }
 
