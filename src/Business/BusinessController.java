@@ -2,10 +2,16 @@ package Business;
 
 import Persistance.*;
 import Presentation.PresentationController;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -373,7 +379,7 @@ public class BusinessController {
                     JsonObject cataleg = llistaCataleg.get(i).getAsJsonObject();
                     String nom = cataleg.get("nom").getAsString();
                     String marca = cataleg.get("marca").getAsString();
-                    presentationController.getVista().productesLlista(i + 1, nom, marca);
+                    presentationController.getVista().productesLlista(i, nom, marca);
                 }
 
                 presentationController.getVista().enrere(llistaCataleg.size() + 1);

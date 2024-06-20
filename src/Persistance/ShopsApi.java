@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -113,7 +114,7 @@ public class ShopsApi implements ShopsDAO{
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             // Configurar la conexión para una solicitud POST
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod("GET");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
 
@@ -164,7 +165,8 @@ public class ShopsApi implements ShopsDAO{
 
     @Override
     public void actualitzarCataleg(String nomTenda, ProducteCataleg producte) {
-
+        int posicioTenda = -1;
+        JsonObject tendaPerActualitzar = null;
         try {
             // Crear la URL
             URL url = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
@@ -173,52 +175,173 @@ public class ShopsApi implements ShopsDAO{
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             // Configurar la conexión para una solicitud POST
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod("GET");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
 
             JsonArray jsonArray = readJsonArrayResponse(connection);
-
-            // Obtener el código de respuesta
-            int responseCode = connection.getResponseCode();
 
             for (int i = 0; i < jsonArray.size(); i++) {
                 JsonObject tenda = jsonArray.get(i).getAsJsonObject();
                 String name = tenda.get("name").getAsString();
 
                 if (name.equals(nomTenda)) {
-                    JsonArray cataleg = tenda.get("catalogue").getAsJsonArray();
-                    cataleg.add(producte.toJsonObject());
-
-                    //FALTE ESCRIURE-HO UN ALTRE COP
+                    tendaPerActualitzar = tenda;
+                    posicioTenda = i;
+                    break;
                 }
+            }
+
+            if (tendaPerActualitzar != null) {
+                // Modificar el catálogo de la tienda
+                JsonArray cataleg = tendaPerActualitzar.get("catalogue").getAsJsonArray();
+                cataleg.add(producte.toJsonObject());
+
+                // URL para eliminar la tienda original
+                URL deleteUrl = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops/" + posicioTenda);
+                HttpURLConnection deleteConnection = (HttpURLConnection) deleteUrl.openConnection();
+                deleteConnection.setRequestMethod("DELETE");
+
+                int deleteResponseCode = deleteConnection.getResponseCode();
+                deleteConnection.disconnect();
+
+                if (deleteResponseCode == HttpURLConnection.HTTP_OK) {
+                    // URL para recrear la tienda
+                    URL postUrl = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
+                    HttpURLConnection postConnection = (HttpURLConnection) postUrl.openConnection();
+                    postConnection.setRequestMethod("POST");
+                    postConnection.setRequestProperty("Content-Type", "application/json");
+                    postConnection.setDoOutput(true);
+
+                    OutputStream os = postConnection.getOutputStream();
+                    os.write(tendaPerActualitzar.toString().getBytes());
+                    os.flush();
+                    os.close();
+
+                    int postResponseCode = postConnection.getResponseCode();
+
+                    if (postResponseCode == HttpURLConnection.HTTP_OK || postResponseCode == HttpURLConnection.HTTP_CREATED) {
+                        System.out.println("El catálogo se ha actualizado correctamente.");
+                    } else {
+                        System.out.println("Error al actualizar el catálogo. Código de respuesta: " + postResponseCode);
+                    }
+
+                    postConnection.disconnect();
+                } else {
+                    System.out.println("Error al eliminar la tienda original. Código de respuesta: " + deleteResponseCode);
+                }
+            } else {
+                System.out.println("La tienda especificada no se encontró.");
             }
 
             connection.disconnect();
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Override
+    public JsonArray productesCataleg(String nomT) {
+        try {
+            // Crear la URL para obtener todas las tiendas
+            URL url = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json");
 
-            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
-                System.out.println("La solicitud POST fue exitosa.");
-            } else {
-                System.out.println("La solicitud POST falló. Código de respuesta: " + responseCode);
+            // Leer la respuesta utilizando readJsonArrayResponse
+            JsonArray jsonArray = readJsonArrayResponse(connection);
+            connection.disconnect();
 
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject tenda = jsonArray.get(i).getAsJsonObject();
+                if (tenda.has("name") && !tenda.get("name").isJsonNull()){
+                    String name = tenda.get("name").getAsString();
+
+                    if (name.equals(nomT)) {
+                        return tenda.get("catalogue").getAsJsonArray();
+                    }
+                }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-    }
-
-    @Override
-    public JsonArray productesCataleg(String nomT) {
         return null;
     }
 
     @Override
     public void eliminarProdCataleg(int num, String nomT) {
+        int posicioTenda = -1;
+        JsonObject tendaPerActualitzar = null;
+        try {
+            // Obtener todas las tiendas
+            URL url = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json");
 
+            // Leer la respuesta utilizando readJsonArrayResponse
+            JsonArray jsonArray = readJsonArrayResponse(connection);
+            connection.disconnect();
+
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject tenda = jsonArray.get(i).getAsJsonObject();
+                String name = tenda.get("name").getAsString();
+
+                if (name.equals(nomT)) {
+                    tendaPerActualitzar = tenda;
+                    posicioTenda = i;
+                    break;
+                }
+            }
+
+            if (tendaPerActualitzar != null) {
+                // Modificar el catálogo de la tienda
+                JsonArray cataleg = tendaPerActualitzar.get("catalogue").getAsJsonArray();
+                cataleg.remove(num);
+
+                // Eliminar la tienda original
+                URL deleteUrl = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops/" + posicioTenda);
+                HttpURLConnection deleteConnection = (HttpURLConnection) deleteUrl.openConnection();
+                deleteConnection.setRequestMethod("DELETE");
+
+                int deleteResponseCode = deleteConnection.getResponseCode();
+                deleteConnection.disconnect();
+
+                if (deleteResponseCode == HttpURLConnection.HTTP_OK) {
+                    // Re-crear la tienda con el catálogo actualizado
+                    URL postUrl = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
+                    HttpURLConnection postConnection = (HttpURLConnection) postUrl.openConnection();
+                    postConnection.setRequestMethod("POST");
+                    postConnection.setRequestProperty("Content-Type", "application/json");
+                    postConnection.setDoOutput(true);
+
+                    OutputStream os = postConnection.getOutputStream();
+                    os.write(tendaPerActualitzar.toString().getBytes());
+                    os.flush();
+                    os.close();
+
+                    int postResponseCode = postConnection.getResponseCode();
+
+                    if (postResponseCode == HttpURLConnection.HTTP_OK || postResponseCode == HttpURLConnection.HTTP_CREATED) {
+                        System.out.println("El producto se ha eliminado correctamente del catálogo.");
+                    } else {
+                        System.out.println("Error al actualizar el catálogo. Código de respuesta: " + postResponseCode);
+                    }
+
+                    postConnection.disconnect();
+                } else {
+                    System.out.println("Error al eliminar la tienda original. Código de respuesta: " + deleteResponseCode);
+                }
+            } else {
+                System.out.println("La tienda especificada no se encontró.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -256,9 +379,6 @@ public class ShopsApi implements ShopsDAO{
 
         return jsonArray;
     }
-
-
-
 
 
     @Override
