@@ -342,40 +342,47 @@ public class BusinessController {
      * Reduce el catálogo de una tienda eliminando productos y solicita confirmación al usuario.
      * @throws InputMismatchException si la entrada no es un número.
      */
-    private void reduccioCataleg(){
+    private void reduccioCataleg() {
         presentationController.getVista().nomTenda();
         String nomT = scanner.nextLine();
         boolean existeix = tipusS.comprovarExistenciaTenda(nomT);
-        if(!existeix){
+
+        if (!existeix) {
             presentationController.getVista().shopExist();
         } else {
             presentationController.getVista().productesCataleg();
             JsonArray llistaCataleg = tipusS.productesCataleg(nomT);
-            for(int i = 0; i < llistaCataleg.size(); i++){
-                JsonObject cataleg = llistaCataleg.get(i).getAsJsonObject();
-                String nom = cataleg.get("nom").getAsString();
-                String marca = cataleg.get("marca").getAsString();
-                presentationController.getVista().productesLlista(i + 1, nom, marca); // Mostrar índices empezando por 1 para el usuario
-            }
-            presentationController.getVista().enrere(llistaCataleg.size() + 1);
-            presentationController.getVista().elegirProducte();
-            int opt = errorInt() - 1; // Asume que errorInt() asegura un número válido
 
-            // Comprobar si opt está en el rango correcto
-            if(opt >= 0 && opt < llistaCataleg.size()){
-                JsonObject cataleg = llistaCataleg.get(opt).getAsJsonObject();
-                String nom = cataleg.get("nom").getAsString();
-                String marca = cataleg.get("marca").getAsString();
-
-                // Aquí asumimos que eliminarProdCataleg maneja correctamente la eliminación
-                tipusS.eliminarProdCataleg(opt, nomT);
-                presentationController.getVista().borratCatConf(nom, marca, nomT);
+            if (llistaCataleg == null || llistaCataleg.size() == 0) {
+                presentationController.getVista().noHiHaProductes();
             } else {
-                // Manejar selección fuera de rango o regresar a gestión de tiendas
-                gestioDeTendes();
+                for (int i = 0; i < llistaCataleg.size(); i++) {
+                    JsonObject cataleg = llistaCataleg.get(i).getAsJsonObject();
+                    String nom = cataleg.get("nom").getAsString();
+                    String marca = cataleg.get("marca").getAsString();
+                    presentationController.getVista().productesLlista(i + 1, nom, marca);
+                }
+
+                presentationController.getVista().enrere(llistaCataleg.size() + 1);
+                presentationController.getVista().elegirProducte();
+                int opt = errorInt() - 1; // Asume que errorInt() asegura un número válido
+
+                if (opt >= 0 && opt < llistaCataleg.size()) {
+                    JsonObject cataleg = llistaCataleg.get(opt).getAsJsonObject();
+                    String nom = cataleg.get("nom").getAsString();
+                    String marca = cataleg.get("marca").getAsString();
+
+                    // Aquí asumimos que eliminarProdCataleg maneja correctamente la eliminación
+                    tipusS.eliminarProdCataleg(opt, nomT);
+                    presentationController.getVista().borratCatConf(nom, marca, nomT);
+                } else {
+                    // Manejar selección fuera de rango o regresar a gestión de tiendas
+                    gestioDeTendes();
+                }
             }
         }
     }
+
 
     /**
      * Realiza una búsqueda de productos por nombre y muestra información detallada, permitiendo al usuario
@@ -386,7 +393,7 @@ public class BusinessController {
         presentationController.getVista().query();
         String query = scanner.nextLine();
         JsonArray llistaResultats = tipusP.llistaDeResultats(query);
-        if(llistaResultats.size() == 0){
+        if(llistaResultats == null || llistaResultats.size() == 0){
             presentationController.getVista().coincidecncies();
         }else{
             int i = 0;
@@ -397,7 +404,7 @@ public class BusinessController {
                 JsonArray productesTenda = tipusS.productesTenda(nomProducte);
 
                 presentationController.getVista().productesLlista(i, nomProducte, nomMarca);
-                if(productesTenda.size() == 0){
+                if(productesTenda==null || productesTenda.size() == 0){
                     presentationController.getVista().noHiHaProductes();
                 }else{
                     presentationController.getVista().soldAt();
@@ -494,57 +501,72 @@ public class BusinessController {
      * Muestra la lista de tiendas disponibles y sus catálogos, permitiendo al usuario explorar la información y realizar acciones.
      * @throws InputMismatchException si la entrada no es un número.
      */
-    private void llistarTendes(){
-        JsonArray tendes;
+    private void llistarTendes() {
+        JsonArray tendes = tipusS.llistaTendes(); // Initialize tendes with the result
         JsonObject tenda;
-        tendes = tipusS.llistaTendes();
         int i = 0;
         int opt = 0;
-        do{
+
+        do {
             presentationController.getVista().iniciLListaTenda();
-            for (i = 0; i < tendes.size(); i++) {
-                tenda = tendes.get(i).getAsJsonObject();
-                String nomTenda = tenda.get("name").getAsString();
-                presentationController.getVista().llistaTendes(i + 1, nomTenda);
-            }
-            presentationController.getVista().enrere(i + 1);
-            presentationController.getVista().confirmarCataleg();
-
-            opt = errorInt() - 1;
-            if(opt >= 0 && opt < tendes.size()){
-                tenda = tendes.get(opt).getAsJsonObject();
-                String nomTenda = tenda.get("name").getAsString();
-                int anyFundacio = tenda.get("since").getAsInt();
-                String descripcio = tenda.get("description").getAsString();
-                JsonArray cataleg = tenda.get("catalogue").getAsJsonArray();
-                presentationController.getVista().dadesTenda(nomTenda, anyFundacio, descripcio);
-
-                for (i = 0; i < cataleg.size(); i++){
-                    JsonObject producte = cataleg.get(i).getAsJsonObject();
-                    String nomProducte = producte.get("nom").getAsString();
-                    String nomMarca = producte.get("marca").getAsString();
-                    float preu = producte.get("preu").getAsFloat();
-                    presentationController.getVista().dadesProducteTenda((i + 1), nomProducte, nomMarca, preu);
-                }
-                presentationController.getVista().enrere(i + 1);
-                presentationController.getVista().interesTendes();
-                int opt2 = errorInt() - 1;
-                if(opt2 == i + 1){
-                    tipusS.llistaTendes();
-                }else{
-                    if(opt2 >= 0 && opt2 <= cataleg.size() - 1){
-                        JsonObject producte = cataleg.get(opt2).getAsJsonObject();
-                        presentationController.getVista().menuLListarTendes();
-                        int opt3 = errorInt();
-                        submenuTendes(opt3, producte, nomTenda);
+            int j=0;
+            if (tendes != null) { // Check if tendes is not null before iterating
+                for (i = 0; i < tendes.size(); i++) {
+                    tenda = tendes.get(i).getAsJsonObject();
+                    if (tenda.has("name") && !tenda.get("name").isJsonNull()) {
+                        String nomTenda = tenda.get("name").getAsString();
+                        presentationController.getVista().llistaTendes(j + 1, nomTenda);
+                        j++;
                     }
                 }
 
-            }else{
-                break;
+                presentationController.getVista().enrere(j+1);
+                presentationController.getVista().confirmarCataleg();
+
+                opt = errorInt() - 1;
+                if (opt >= 0 && opt < tendes.size()) {
+                    tenda = tendes.get(opt).getAsJsonObject();
+                    String nomTenda = tenda.get("name").getAsString();
+                    int anyFundacio = tenda.get("since").getAsInt();
+                    String descripcio = tenda.get("description").getAsString();
+                    JsonArray cataleg = tenda.get("catalogue").getAsJsonArray();
+                    presentationController.getVista().dadesTenda(nomTenda, anyFundacio, descripcio);
+
+                    for (i = 0; i < cataleg.size(); i++) {
+                        JsonObject producte = cataleg.get(i).getAsJsonObject();
+                        String nomProducte = producte.get("nom").getAsString();
+                        String nomMarca = producte.get("marca").getAsString();
+                        float preu = producte.get("preu").getAsFloat();
+                        presentationController.getVista().dadesProducteTenda((i + 1), nomProducte, nomMarca, preu);
+                    }
+
+                    presentationController.getVista().enrere(i + 1);
+                    presentationController.getVista().interesTendes();
+                    int opt2 = errorInt() - 1;
+
+                    if (opt2 == i + 1) {
+                        tipusS.llistaTendes(); // Not sure why this line is here; it seems redundant
+                    } else {
+                        if (opt2 >= 0 && opt2 <= cataleg.size() - 1) {
+                            JsonObject producte = cataleg.get(opt2).getAsJsonObject();
+                            presentationController.getVista().menuLListarTendes();
+                            int opt3 = errorInt();
+                            submenuTendes(opt3, producte, nomTenda);
+                        }
+                    }
+
+                } else {
+                    break;
+                }
+            } else {
+                // Handle the case where tendes is null (optional)
+                presentationController.getVista().noTendesAvailable();
+                break; // Exit the loop if tendes is null
             }
-        }while (opt != 3);
+
+        } while (opt != 3);
     }
+
 
     /**
      * Ejecuta acciones específicas del usuario para un producto seleccionado en el catálogo de una tienda.

@@ -40,5 +40,49 @@
         "preu": 1.43
       }
     ]
+  },
+  {
+    "name": "hlaaa",
+    "description": "jeje",
+    "since": 1900,
+    "earnings": 0.0,
+    "businessModel": "MAX_PROFIT",
+    "catalogue": []
+  },
+  {
+    "name": "pere",
+    "description": "poro",
+    "since": 1990,
+    "earnings": 0.0,
+    "businessModel": "MAX_PROFIT",
+    "catalogue": [
+      {
+        "nom": "mala",
+        "marca": "Mele",
+        "preu": 3.0
+      }
+    ]
+  },
+  {
+    "name": "puru",
+    "description": "pepito",
+    "since": 1999,
+    "earnings": 0.0,
+    "businessModel": "MAX_PROFIT",
+    "catalogue": [
+      {
+        "nom": "camisa",
+        "marca": "Nike",
+        "preu": 10.0
+      }
+    ]
+  },
+  {
+    "name": "hola",
+    "description": "heyhey",
+    "since": 1909,
+    "earnings": 0.0,
+    "businessModel": "MAX_PROFIT",
+    "catalogue": []
   }
 ]

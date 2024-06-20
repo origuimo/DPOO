@@ -1,1 +1,102 @@
-[{"name":"Bouquet of Roses","brand":"La Salle Gardening","mrp":79.99,"category":"GENERAL","reviews":[{"estrelles":3,"comentari":"bastant beeee"}]},{"name":"Xuixo de Crema","brand":"Viladrau Bakery","mrp":5.5,"category":"REDUCED","reviews":[{"estrelles":2,"comentari":"Book Pated"},{"estrelles":3,"comentari":"Publishers Incorporated"},{"estrelles":5,"comentari":"Book Publishers Incrated"},{"estrelles":1,"comentari":"Book  Incorporated"},{"estrelles":3,"comentari":"Book Publishers "},{"estrelles":3,"comentari":"hola"},{"estrelles":4,"comentari":"dsfd"},{"estrelles":3,"comentari":"fsdsfsd"},{"estrelles":2,"comentari":"dasdas"}]},{"name":"The Neverending Story","brand":"Book Publishers Incorporated","mrp":99.0,"category":"SUPER_REDUCED","reviews":[]},{"name":"holaaa","brand":"Jdsffdj Fdj","mrp":23.55,"category":"General","reviews":[{"estrelles":1,"comentari":"fgd"},{"estrelles":2,"comentari":"fdf"}]},{"name":"holaaaaa","brand":"Dsadsa","mrp":10.0,"category":"General","reviews":[]}]
+[
+  {
+    "name": "Bouquet of Roses",
+    "brand": "La Salle Gardening",
+    "mrp": 79.99,
+    "category": "GENERAL",
+    "reviews": [
+      {
+        "estrelles": 3,
+        "comentari": "bastant beeee"
+      }
+    ]
+  },
+  {
+    "name": "Xuixo de Crema",
+    "brand": "Viladrau Bakery",
+    "mrp": 5.5,
+    "category": "REDUCED",
+    "reviews": [
+      {
+        "estrelles": 2,
+        "comentari": "Book Pated"
+      },
+      {
+        "estrelles": 3,
+        "comentari": "Publishers Incorporated"
+      },
+      {
+        "estrelles": 5,
+        "comentari": "Book Publishers Incrated"
+      },
+      {
+        "estrelles": 1,
+        "comentari": "Book  Incorporated"
+      },
+      {
+        "estrelles": 3,
+        "comentari": "Book Publishers "
+      },
+      {
+        "estrelles": 3,
+        "comentari": "hola"
+      },
+      {
+        "estrelles": 4,
+        "comentari": "dsfd"
+      },
+      {
+        "estrelles": 3,
+        "comentari": "fsdsfsd"
+      },
+      {
+        "estrelles": 2,
+        "comentari": "dasdas"
+      }
+    ]
+  },
+  {
+    "name": "The Neverending Story",
+    "brand": "Book Publishers Incorporated",
+    "mrp": 99.0,
+    "category": "SUPER_REDUCED",
+    "reviews": []
+  },
+  {
+    "name": "holaaa",
+    "brand": "Jdsffdj Fdj",
+    "mrp": 23.55,
+    "category": "General",
+    "reviews": [
+      {
+        "estrelles": 1,
+        "comentari": "fgd"
+      },
+      {
+        "estrelles": 2,
+        "comentari": "fdf"
+      }
+    ]
+  },
+  {
+    "name": "holaaaaa",
+    "brand": "Dsadsa",
+    "mrp": 10.0,
+    "category": "General",
+    "reviews": []
+  },
+  {
+    "name": "mala",
+    "brand": "Mele",
+    "mrp": 3.0,
+    "category": "General",
+    "reviews": []
+  },
+  {
+    "name": "camisa",
+    "brand": "Nike",
+    "mrp": 13.0,
+    "category": "Reduced Taxes",
+    "reviews": []
+  }
+]

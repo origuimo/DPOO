@@ -23,34 +23,40 @@ public class ShopsApi implements ShopsDAO{
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(5000);
 
-            JsonArray jsonArray = readJsonArrayResponse(connection);
-
             int responseCode = connection.getResponseCode();
 
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                JsonArray jsonArray = readJsonArrayResponse(connection);
+                connection.disconnect();
 
-            connection.disconnect();
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JsonObject product = jsonArray.get(i).getAsJsonObject();
 
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JsonObject product = jsonArray.get(i).getAsJsonObject();
-                String name = product.get("name").getAsString();
+                    // Imprimir el objeto JSON completo para depuración
+                    //System.out.println("Objeto JSON en índice " + i + ": " + product.toString());
 
-                if (name.equals(nom)) {
-                    return true;
+                    // Verificar si el objeto tiene el campo "name"
+                    if (product.has("name")) {
+                        String name = product.get("name").getAsString();
+                        if (name.equals(nom)) {
+                            return true;
+                        }
+                    } else {
+                        //System.out.println("El objeto en el índice " + i + " no tiene un campo 'name', será ignorado.");
+                    }
                 }
-            }
-
-            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
-                System.out.println("La solicitud GET fue exitosa.");
             } else {
                 System.out.println("La solicitud GET falló. Código de respuesta: " + responseCode);
             }
 
-
         } catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
+
         return false;
     }
+
 
     @Override
     public boolean afegirTenda(Tenda tenda) {
@@ -221,9 +227,39 @@ public class ShopsApi implements ShopsDAO{
     }
 
     @Override
-    public JsonArray llistaTendes() {
-        return null;
+    public JsonArray llistaTendes(){
+        JsonArray jsonArray = new JsonArray();
+        try {
+            URL apiURL = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
+            HttpURLConnection connection = (HttpURLConnection) apiURL.openConnection();
+
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+
+            jsonArray = readJsonArrayResponse(connection);
+
+            int responseCode = connection.getResponseCode();
+
+            connection.disconnect();
+
+            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+                System.out.println("La solicitud GET fue exitosa.");
+            } else {
+                System.out.println("La solicitud GET falló. Código de respuesta: " + responseCode);
+            }
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return jsonArray;
     }
+
+
+
+
 
     @Override
     public float actualitzarIngresos(String nomT, float carret) {

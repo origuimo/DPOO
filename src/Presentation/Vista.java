@@ -557,5 +557,8 @@ public class Vista {
     public void comentariBuit(){
         System.out.println("El comentario no puede estar vacio\n");
     }
+
+    public void noTendesAvailable() { System.out.println("No hay tiendas disponibles");
+    }
 }
 

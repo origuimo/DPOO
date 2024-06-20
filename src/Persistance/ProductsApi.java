@@ -240,6 +240,7 @@ public class ProductsApi implements ProductsDAO{
     @Override
     public JsonArray llistaDeResultats(String query) {
 
+        JsonArray resultsArray = new JsonArray();
         try {
             URL apiURL = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/products");
             HttpURLConnection connection = (HttpURLConnection) apiURL.openConnection();
@@ -261,18 +262,25 @@ public class ProductsApi implements ProductsDAO{
                 System.out.println("La solicitud GET falló. Código de respuesta: " + responseCode);
             }
 
+
+
             for (int i = 0; i < jsonArray.size(); i++) {
                 JsonObject product = jsonArray.get(i).getAsJsonObject();
                 String productName = product.get("name").getAsString();
                 String brandName = product.get("brand").getAsString();
+
+                // Verificar si el producto cumple con los criterios de búsqueda
                 if (productName.equalsIgnoreCase(query) || productName.toLowerCase().contains(query.toLowerCase()) || brandName.equals(query)) {
-                    jsonArray.add(product);
+                    resultsArray.add(product); // Añadir el producto al nuevo array de resultados
                 }
             }
+
+// Usar resultsArray para cualquier operación adicional
+
         } catch (IOException e) {
             return null;
         }
-        return null;
+        return resultsArray;
     }
 
     @Override
