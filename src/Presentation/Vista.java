@@ -234,6 +234,10 @@ public class Vista {
                 "Por favor, elige el modelo de negocio de la tienda:");
     }
 
+    public void loyaltiThreshold(){
+        System.out.println("Please enter the shop’s loyalty threshold: ");
+    }
+
     /**
      * Muestra un mensaje indicando que la tienda se ha agregado con éxito a la familia elCofre.
      */

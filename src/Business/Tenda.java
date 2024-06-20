@@ -15,23 +15,28 @@ public class Tenda {
 
     private float ingresos;
     private String modelNegoci;
+
+    private float loyaltyThreshold;
     private JsonArray cataleg;
 
     /**
      * Constructor para la clase Tenda.
-     * @param nom Nombre de la tienda.
-     * @param descripcio Descripción de la tienda.
+     *
+     * @param nom         Nombre de la tienda.
+     * @param descripcio  Descripción de la tienda.
      * @param anyFundacio Año de fundación de la tienda.
-     * @param ingresos Ingresos acumulados de la tienda.
+     * @param ingresos    Ingresos acumulados de la tienda.
      * @param modelNegoci Modelo de negocio de la tienda.
-     * @param cataleg Catálogo de productos de la tienda.
+     * @param loyaltyThreshold     Threshold de la tienda
+     * @param cataleg     Catálogo de productos de la tienda.
      */
-    public Tenda(String nom, String descripcio, int anyFundacio, float ingresos, String modelNegoci, JsonArray cataleg) {
+    public Tenda(String nom, String descripcio, int anyFundacio, float ingresos, String modelNegoci, float loyaltyThreshold, JsonArray cataleg) {
         this.nom = nom;
         this.descripcio = descripcio;
         this.anyFundacio = anyFundacio;
         this.ingresos = ingresos;
         this.modelNegoci = modelNegoci;
+        this.loyaltyThreshold= loyaltyThreshold;
         this.cataleg = cataleg;
     }
 
@@ -46,6 +51,7 @@ public class Tenda {
         jsonObject.addProperty("since", anyFundacio);
         jsonObject.addProperty("earnings", ingresos);
         jsonObject.addProperty("businessModel", modelNegoci);
+        jsonObject.addProperty("loyaltyThreshold", loyaltyThreshold);
         jsonObject.add("catalogue", cataleg);
         return jsonObject;
     }

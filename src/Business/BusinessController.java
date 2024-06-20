@@ -155,10 +155,15 @@ public class BusinessController {
                 String nomCat = null;
                 if(categoria == 'A'){
                     nomCat = "General";
+                    preuMax= (float) ((preuMax)/(1+0.21));
                 }else if(categoria == 'B'){
                     nomCat = "Reduced Taxes";
+                    preuMax= (float) ((preuMax)/(1+0.1));
                 }else if(categoria == 'C'){
                     nomCat = "Superreduced Taxes";
+                    if(preuMax>=100){
+                        preuMax= (float) ((preuMax)/(1+0.04));
+                    }
                 }
                 JsonArray valoracions = new JsonArray();
                 Producte producte = new Producte(nom, marcamod, preuMax, nomCat, valoracions);
@@ -173,6 +178,8 @@ public class BusinessController {
 
         }
     }
+
+
 
     /**
      * Elimina productos del catálogo y solicita confirmación al usuario antes de realizar la operación.
@@ -280,15 +287,21 @@ public class BusinessController {
                     model = modelStr.charAt(0);
                 }while(model != 'A' && model != 'B' && model != 'C');
                 String nomModel = null;
+                int loyalty=0;
                 if(model == 'A'){
                     nomModel = "MAX_PROFIT";
+                    loyalty=0;
                 }else if(model == 'B'){
                     nomModel = "LOYALTY";
+                    presentationController.getVista().loyaltiThreshold();
+                    loyalty = errorInt();
                 }else if(model == 'C'){
                     nomModel = "SPONSORED";
+                    loyalty=0;
                 }
+
                 JsonArray catalegVuid = new JsonArray();
-                Tenda tenda = new Tenda(nom, descripcio, anyF, 0, nomModel, catalegVuid);
+                Tenda tenda = new Tenda(nom, descripcio, anyF, 0, nomModel,loyalty ,catalegVuid);
                 existeix = tipusS.afegirTenda(tenda);
 
                 if (existeix){
@@ -502,7 +515,7 @@ public class BusinessController {
      * @throws InputMismatchException si la entrada no es un número.
      */
     private void llistarTendes() {
-        JsonArray tendes = tipusS.llistaTendes(); // Initialize tendes with the result
+        JsonArray tendes = tipusS.llistaTendes();
         JsonObject tenda;
         int i = 0;
         int opt = 0;
@@ -510,7 +523,7 @@ public class BusinessController {
         do {
             presentationController.getVista().iniciLListaTenda();
             int j=0;
-            if (tendes != null) { // Check if tendes is not null before iterating
+            if (tendes != null) {
                 for (i = 0; i < tendes.size(); i++) {
                     tenda = tendes.get(i).getAsJsonObject();
                     if (tenda.has("name") && !tenda.get("name").isJsonNull()) {
