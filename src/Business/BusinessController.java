@@ -450,9 +450,19 @@ public class BusinessController {
                 switch (opt){
                     case 1 -> veureValoracions(nomProducte, marca);
                     case 2 -> afegirValoracio(nomProducte, marca);
+                    //afegir poder comprar mirar que el preuproducte y nombotiga no siguin fixos.
+                    case 3 -> comprarProducte(nomProducte, marca, 5, "holap");
                 }
             }
         }
+    }
+
+
+    private void comprarProducte(String nomProducte, String marca, float preuProducte, String nomBotiga) {
+        Carret nuevoProducto = new Carret(nomProducte, marca, preuProducte, nomBotiga);
+        productesCarret.add(nuevoProducto.toJsonObject());
+        System.out.println("Producto añadido al carrito: " + nomProducte);
+
     }
 
     /**

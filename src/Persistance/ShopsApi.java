@@ -397,7 +397,6 @@ public class ShopsApi implements ShopsDAO{
 
 
 
-
     @Override
     public JsonArray llistaTendes(){
         JsonArray jsonArray = new JsonArray();

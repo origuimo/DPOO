@@ -334,7 +334,8 @@ public class Vista {
      */
     public void menuResultats() {
         System.out.println(" 1) Leer Reseñas\n" +
-                " 2) Hacer Reseña al Producto\n");
+                " 2) Hacer Reseña al Producto\n" +
+                " 3) Comprar Producto");
     }
 
     /**
