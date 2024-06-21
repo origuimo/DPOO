@@ -4,6 +4,7 @@ import Business.ProducteCataleg;
 import Business.Tenda;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.DataOutputStream;
@@ -346,8 +347,56 @@ public class ShopsApi implements ShopsDAO{
 
     @Override
     public JsonArray productesTenda(String nomProducte) {
-        return null;
+        JsonArray resultArray = new JsonArray();
+        try {
+            String apiUrl = "https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops";
+            URL apiURL = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) apiURL.openConnection();
+
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+
+            JsonArray shopsArray = readJsonArrayResponse(connection);
+
+            int responseCode = connection.getResponseCode();
+
+            connection.disconnect();
+
+            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+                System.out.println("La solicitud GET de tiendas fue exitosa.");
+
+                for (int i = 0; i < shopsArray.size(); i++) {
+                    JsonObject shop = shopsArray.get(i).getAsJsonObject();
+                    JsonArray catalogue = shop.getAsJsonArray("catalogue");
+
+                    for (int j = 0; j < catalogue.size(); j++) {
+                        JsonObject product = catalogue.get(j).getAsJsonObject();
+                        String productName = product.get("nom").getAsString();
+
+                        if (productName.equalsIgnoreCase(nomProducte)) {
+                            JsonObject productInfo = new JsonObject();
+                            productInfo.addProperty("nomTenda", shop.get("name").getAsString());
+                            productInfo.addProperty("preu", product.get("preu").getAsFloat());
+                            resultArray.add(productInfo);
+                            break;
+                        }
+                    }
+                }
+
+            } else {
+                System.out.println("La solicitud GET de tiendas falló. Código de respuesta: " + responseCode);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return resultArray;
     }
+
+
+
+
 
     @Override
     public JsonArray llistaTendes(){
