@@ -651,13 +651,32 @@ public class BusinessController {
                 String nomT = carret.get("nomTenda").getAsString();
                 String categoria = carret.get("categoria").getAsString();
                 float preuImpostos = 0;
+
+
                 switch (categoria){
                     case "General":
                         preuImpostos= (float) ((preu)/(1+0.21));
 
                         break;
                     case "Reduced Taxes":
-                        preuImpostos= (float) ((preu)/(1+0.1));
+
+                        JsonArray llistaValoracions = new JsonArray();
+                        float mitjana = 0;
+                        llistaValoracions = tipusP.llistarValoracions(carret.get("nomProducte").getAsString());
+                        if(llistaValoracions != null) {
+                            int sumaEstrelles = 0;
+                            for (int j = 0; j < llistaValoracions.size(); j++) {
+                                JsonObject valoracio = llistaValoracions.get(j).getAsJsonObject();
+                                int estrelles = valoracio.get("estrelles").getAsInt();
+                                sumaEstrelles += estrelles;
+                            }
+                            mitjana = (float) sumaEstrelles / llistaValoracions.size();
+                        }
+                        if(mitjana > 3.5){
+                            preuImpostos= (float) ((preu)/(1+0.05));
+                        }else{
+                            preuImpostos= (float) ((preu)/(1+0.1));
+                        }
                         break;
                     case "Superreduced Taxes":
                         if(preuImpostos>=100){
