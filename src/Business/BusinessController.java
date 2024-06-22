@@ -161,15 +161,10 @@ public class BusinessController {
                 String nomCat = null;
                 if(categoria == 'A'){
                     nomCat = "General";
-                    preuMax= (float) ((preuMax)/(1+0.21));
                 }else if(categoria == 'B'){
                     nomCat = "Reduced Taxes";
-                    preuMax= (float) ((preuMax)/(1+0.1));
                 }else if(categoria == 'C'){
                     nomCat = "Superreduced Taxes";
-                    if(preuMax>=100){
-                        preuMax= (float) ((preuMax)/(1+0.04));
-                    }
                 }
                 JsonArray valoracions = new JsonArray();
                 Producte producte = new Producte(nom, marcamod, preuMax, nomCat, valoracions);
@@ -292,22 +287,24 @@ public class BusinessController {
                     String modelStr = scanner.next();
                     model = modelStr.charAt(0);
                 }while(model != 'A' && model != 'B' && model != 'C');
-                String nomModel = null;
-                int loyalty=0;
+
+                Tenda tenda = null;
+                JsonArray catalegVuid = new JsonArray();
+
                 if(model == 'A'){
-                    nomModel = "MAX_PROFIT";
-                    loyalty=0;
+                    tenda = new Tenda(nom, descripcio, anyF, 0, "MAX_PROFIT", catalegVuid);
                 }else if(model == 'B'){
-                    nomModel = "LOYALTY";
+                    float loyalty = 0;
                     presentationController.getVista().loyaltiThreshold();
                     loyalty = errorInt();
+                    tenda = new Loyalty(nom, descripcio, anyF, 0, catalegVuid, loyalty);
                 }else if(model == 'C'){
-                    nomModel = "SPONSORED";
-                    loyalty=0;
+                    scanner.nextLine();
+                    presentationController.getVista().sponsor();
+                    String sponsor = scanner.nextLine();
+                    tenda = new Sponsored(nom, descripcio, anyF, 0, catalegVuid, sponsor);
                 }
 
-                JsonArray catalegVuid = new JsonArray();
-                Tenda tenda = new Tenda(nom, descripcio, anyF, 0, nomModel,loyalty ,catalegVuid);
                 existeix = tipusS.afegirTenda(tenda);
 
                 if (existeix){
@@ -348,7 +345,8 @@ public class BusinessController {
                         presentationController.getVista().errorPreuprod();
                     }else{
                         String marca = tipusP.obtenirMarca(nomP);
-                        ProducteCataleg producteCataleg = new ProducteCataleg(nomP, marca, preu);
+                        String categoria = tipusP.obtenirCategoria(nomP);
+                        ProducteCataleg producteCataleg = new ProducteCataleg(nomP, marca, preu, categoria);
                         tipusS.actualitzarCataleg(nomT, producteCataleg);
                         presentationController.getVista().catalegActualitzat(nomP, marca, nomT);
                     }
@@ -450,20 +448,11 @@ public class BusinessController {
                 switch (opt){
                     case 1 -> veureValoracions(nomProducte, marca);
                     case 2 -> afegirValoracio(nomProducte, marca);
-                    //afegir poder comprar mirar que el preuproducte y nombotiga no siguin fixos.
-                    case 3 -> comprarProducte(nomProducte, marca, 5, "holap");
                 }
             }
         }
     }
 
-
-    private void comprarProducte(String nomProducte, String marca, float preuProducte, String nomBotiga) {
-        Carret nuevoProducto = new Carret(nomProducte, marca, preuProducte, nomBotiga);
-        productesCarret.add(nuevoProducto.toJsonObject());
-        System.out.println("Producto añadido al carrito: " + nomProducte);
-
-    }
 
     /**
      * Muestra las valoraciones de un producto, calcula la media de las estrellas y muestra la información al usuario.
@@ -617,7 +606,7 @@ public class BusinessController {
      * @param nomTenda Nombre de la tienda.
      */
     private void afegirCarret(JsonObject producte, String nomTenda){
-        Carret carret = new Carret(producte.get("nom").getAsString(), producte.get("marca").getAsString(), producte.get("preu").getAsFloat(), nomTenda);
+        Carret carret = new Carret(producte.get("nom").getAsString(), producte.get("marca").getAsString(), producte.get("preu").getAsFloat(), nomTenda, producte.get("categoria").getAsString());
         productesCarret.add(carret.toJsonObject());
         presentationController.getVista().afegitCarret(producte.get("nom").getAsString(), producte.get("marca").getAsString());
 
@@ -644,7 +633,7 @@ public class BusinessController {
         presentationController.getVista().menuCarret();
         int opt = errorInt();
         switch (opt){
-            case 1 -> finalitzarCompra();
+            case 1 -> finalitzarCompra(preu);
             case 2 -> buidarCarret();
         }
     }
@@ -653,16 +642,32 @@ public class BusinessController {
      * Finaliza la compra, actualiza los ingresos de las tiendas y limpia el carrito de compras.
      * @throws InputMismatchException si la entrada no es un número.
      */
-    private void finalitzarCompra(){
+    private void finalitzarCompra(float preu){
         presentationController.getVista().confirmarCompra();
         String confirmar = scanner.nextLine();
         if(confirmar.equalsIgnoreCase("yes")){
             for(int i = 0; i < productesCarret.size(); i++){
                 JsonObject carret = productesCarret.get(i).getAsJsonObject();
-                float preu = carret.get("preu").getAsFloat();
                 String nomT = carret.get("nomTenda").getAsString();
-                float ingresos = tipusS.actualitzarIngresos(nomT, preu);
-                presentationController.getVista().ingresosActualitzats(nomT, preu, ingresos);
+                String categoria = carret.get("categoria").getAsString();
+                float preuImpostos = 0;
+                switch (categoria){
+                    case "General":
+                        preuImpostos= (float) ((preu)/(1+0.21));
+
+                        break;
+                    case "Reduced Taxes":
+                        preuImpostos= (float) ((preu)/(1+0.1));
+                        break;
+                    case "Superreduced Taxes":
+                        if(preuImpostos>=100){
+                            preuImpostos= (float) ((preu)/(1+0.04));
+                        }
+                        break;
+                }
+
+                float ingresos = tipusS.actualitzarIngresos(nomT, preuImpostos);
+                presentationController.getVista().ingresosActualitzats(nomT, preuImpostos, ingresos);
                 productesCarret.remove(i);
             }
             for(int i = 0; i < productesCarret.size(); i++){

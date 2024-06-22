@@ -54,6 +54,8 @@ public interface ProductsDAO {
      */
     String obtenirMarca(String nomP);
 
+    String obtenirCategoria(String nomP);
+
     /**
      * Realiza una búsqueda en el sistema y devuelve un array JSON con los resultados.
      * @param query Término de búsqueda.

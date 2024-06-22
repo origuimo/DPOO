@@ -238,6 +238,44 @@ public class ProductsApi implements ProductsDAO{
     }
 
     @Override
+    public String obtenirCategoria(String nomP) {
+
+        try {
+            URL apiURL = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/products");
+            HttpURLConnection connection = (HttpURLConnection) apiURL.openConnection();
+
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+
+            JsonArray jsonArray = readJsonArrayResponse(connection);
+
+            int responseCode = connection.getResponseCode();
+
+
+            connection.disconnect();
+
+
+            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+                System.out.println("La solicitud GET fue exitosa.");
+            } else {
+                System.out.println("La solicitud GET falló. Código de respuesta: " + responseCode);
+            }
+
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject product = jsonArray.get(i).getAsJsonObject();
+                String name = product.get("name").getAsString();
+
+                if (name.equals(nomP)) {
+                    return product.get("category").getAsString();
+                }
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return null;
+    }
+
+    @Override
     public JsonArray llistaDeResultats(String query) {
 
         JsonArray resultsArray = new JsonArray();

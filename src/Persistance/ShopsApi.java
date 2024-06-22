@@ -430,7 +430,73 @@ public class ShopsApi implements ShopsDAO{
 
 
     @Override
-    public float actualitzarIngresos(String nomT, float carret) {
-        return 0;
+    public float actualitzarIngresos(String nomTenda, float nuevosIngresos) {
+        JsonObject tendaPerActualitzar = null;
+        float earningsActual = 0.0f;
+        float earningsActualizado = 0.0f;
+
+        try {
+            // Crear la URL para obtener todas las tiendas
+            URL url = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
+
+            // Abrir conexión
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // Configurar la conexión para una solicitud GET
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            // Leer la respuesta JSON en un JsonArray
+            JsonArray jsonArray = readJsonArrayResponse(connection);
+
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject tenda = jsonArray.get(i).getAsJsonObject();
+                String name = tenda.get("name").getAsString();
+
+                if (name.equals(nomTenda)) {
+                    tendaPerActualitzar = tenda;
+                    earningsActual = tenda.get("earnings").getAsFloat();
+                    break;
+                }
+            }
+
+            if (tendaPerActualitzar != null) {
+                // Sumar los nuevos ingresos a los ingresos actuales
+                earningsActualizado = earningsActual + nuevosIngresos;
+                tendaPerActualitzar.addProperty("earnings", earningsActualizado);
+
+                // URL para actualizar la tienda (POST)
+                URL postUrl = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
+                HttpURLConnection postConnection = (HttpURLConnection) postUrl.openConnection();
+                postConnection.setRequestMethod("POST");
+                postConnection.setRequestProperty("Content-Type", "application/json");
+                postConnection.setDoOutput(true);
+
+                OutputStream os = postConnection.getOutputStream();
+                os.write(tendaPerActualitzar.toString().getBytes());
+                os.flush();
+                os.close();
+
+                int postResponseCode = postConnection.getResponseCode();
+
+                if (postResponseCode == HttpURLConnection.HTTP_OK || postResponseCode == HttpURLConnection.HTTP_CREATED) {
+                    System.out.println("Los ingresos se han actualizado correctamente.");
+                } else {
+                    System.out.println("Error al actualizar los ingresos. Código de respuesta: " + postResponseCode);
+                }
+
+                postConnection.disconnect();
+            } else {
+                System.out.println("La tienda especificada no se encontró.");
+            }
+
+            connection.disconnect();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return earningsActualizado;
     }
 }

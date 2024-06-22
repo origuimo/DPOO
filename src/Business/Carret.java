@@ -13,6 +13,7 @@ public class Carret {
     private String marcaProducte;
     private float preuProducte;
     private String nomBotiga;
+    private String categoria;
 
 
     /**
@@ -22,11 +23,12 @@ public class Carret {
      * @param preuProducte Precio del producto en el carrito.
      * @param nomBotiga Nombre de la tienda asociada al producto en el carrito.
      */
-    public Carret(String nomProducte, String marcaProducte, float preuProducte, String nomBotiga) {
+    public Carret(String nomProducte, String marcaProducte, float preuProducte, String nomBotiga, String categoria) {
         this.nomProducte = nomProducte;
         this.marcaProducte = marcaProducte;
         this.preuProducte = preuProducte;
         this.nomBotiga = nomBotiga;
+        this.categoria = categoria;
     }
 
     /**
@@ -39,6 +41,7 @@ public class Carret {
         jsonObject.addProperty("marca", marcaProducte);
         jsonObject.addProperty("preu", preuProducte);
         jsonObject.addProperty("nomTenda", nomBotiga);
+        jsonObject.addProperty("categoria", categoria);
         return jsonObject;
     }
 }

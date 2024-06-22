@@ -14,16 +14,19 @@ public class ProducteCataleg {
     private String marca;
     private float preu;
 
+    private String categoria;
+
     /**
      * Constructor para la clase ProducteCataleg.
      * @param nom Nombre del producto en el catálogo.
      * @param marca Marca del producto en el catálogo.
      * @param preu Precio del producto en el catálogo.
      */
-    public ProducteCataleg(String nom, String marca, float preu) {
+    public ProducteCataleg(String nom, String marca, float preu, String categoria) {
         this.nom = nom;
         this.marca = marca;
         this.preu = preu;
+        this.categoria = categoria;
     }
 
     /**
@@ -35,6 +38,7 @@ public class ProducteCataleg {
         jsonObject.addProperty("nom", nom);
         jsonObject.addProperty("marca", marca);
         jsonObject.addProperty("preu", preu);
+        jsonObject.addProperty("categoria", categoria);
         return jsonObject;
     }
 }

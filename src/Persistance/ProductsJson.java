@@ -197,6 +197,30 @@ public class ProductsJson implements ProductsDAO {
 
     }
 
+    @Override
+    public String obtenirCategoria(String nomP){
+        Path filePath = Paths.get("src/Arxius/products.json");
+        String marca = null;
+        try (Reader reader = Files.newBufferedReader(filePath)) {
+            Gson gson = new Gson();
+
+            JsonArray productList = gson.fromJson(reader, JsonArray.class);
+
+            for (int i = 0; i < productList.size(); i++) {
+                JsonObject product = productList.get(i).getAsJsonObject();
+                String name = product.get("name").getAsString();
+
+                if (name.equals(nomP)) {
+                    return product.get("category").getAsString();
+                }
+            }
+        } catch (IOException e) {
+            return marca;
+        }
+        return marca;
+
+    }
+
     /**
      * Busca productos en el sistema que coincidan con la consulta proporcionada.
      * @param query Consulta para buscar productos por nombre o marca.

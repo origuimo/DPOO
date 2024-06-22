@@ -238,6 +238,10 @@ public class Vista {
         System.out.println("Please enter the shop’s loyalty threshold: ");
     }
 
+    public void sponsor(){
+        System.out.println("Please enter the shop’s sponsor: ");
+    }
+
     /**
      * Muestra un mensaje indicando que la tienda se ha agregado con éxito a la familia elCofre.
      */
