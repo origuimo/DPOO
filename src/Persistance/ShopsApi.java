@@ -166,8 +166,8 @@ public class ShopsApi implements ShopsDAO{
 
     @Override
     public void actualitzarCataleg(String nomTenda, ProducteCataleg producte) {
-        int posicioTenda = -1;
         JsonObject tendaPerActualitzar = null;
+        int idTenda = -1;
         try {
             // Crear la URL
             URL url = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
@@ -175,10 +175,9 @@ public class ShopsApi implements ShopsDAO{
             // Abrir conexión
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            // Configurar la conexión para una solicitud POST
+            // Configurar la conexión para una solicitud GET
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
 
             JsonArray jsonArray = readJsonArrayResponse(connection);
 
@@ -188,7 +187,7 @@ public class ShopsApi implements ShopsDAO{
 
                 if (name.equals(nomTenda)) {
                     tendaPerActualitzar = tenda;
-                    posicioTenda = i;
+                    idTenda = i;
                     break;
                 }
             }
@@ -199,7 +198,7 @@ public class ShopsApi implements ShopsDAO{
                 cataleg.add(producte.toJsonObject());
 
                 // URL para eliminar la tienda original
-                URL deleteUrl = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops/" + posicioTenda);
+                URL deleteUrl = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops/" + idTenda);
                 HttpURLConnection deleteConnection = (HttpURLConnection) deleteUrl.openConnection();
                 deleteConnection.setRequestMethod("DELETE");
 
@@ -241,6 +240,7 @@ public class ShopsApi implements ShopsDAO{
             e.printStackTrace();
         }
     }
+
 
     @Override
     public JsonArray productesCataleg(String nomT) {
