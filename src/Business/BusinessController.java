@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -26,7 +28,6 @@ public class BusinessController {
     private ProductsDAO tipusP;
 
     private ShopsDAO tipusS;
-
 
     public boolean checkApi(){return API.checkApi();}
 
@@ -633,66 +634,96 @@ public class BusinessController {
         presentationController.getVista().menuCarret();
         int opt = errorInt();
         switch (opt){
-            case 1 -> finalitzarCompra(preu);
+            case 1 -> finalitzarCompra();
             case 2 -> buidarCarret();
         }
+    }
+
+    private Map<String, JsonArray> separarProdyctesPerTenda(JsonArray productes){
+        Map<String, JsonArray> productosPorTienda = new HashMap<>();
+        for(int i = 0; i < productesCarret.size(); i++) {
+            JsonObject carret = productesCarret.get(i).getAsJsonObject();
+            String nomT = carret.get("nomTenda").getAsString();
+
+            if (!productosPorTienda.containsKey(nomT)) {
+                productosPorTienda.put(nomT, new JsonArray());
+            }
+
+            productosPorTienda.get(nomT).add(carret);
+        }
+        return productosPorTienda;
     }
 
     /**
      * Finaliza la compra, actualiza los ingresos de las tiendas y limpia el carrito de compras.
      * @throws InputMismatchException si la entrada no es un número.
      */
-    private void finalitzarCompra(float preu){
+    private void finalitzarCompra(){
         presentationController.getVista().confirmarCompra();
         String confirmar = scanner.nextLine();
         if(confirmar.equalsIgnoreCase("yes")){
-            for(int i = 0; i < productesCarret.size(); i++){
-                JsonObject carret = productesCarret.get(i).getAsJsonObject();
-                String nomT = carret.get("nomTenda").getAsString();
-                String categoria = carret.get("categoria").getAsString();
-                float preuImpostos = 0;
+            Map<String, JsonArray> productesPerTenda = separarProdyctesPerTenda(productesCarret);
+            float preuTot = 0;
+            for (Map.Entry<String, JsonArray> entry : productesPerTenda.entrySet()) {
+                String nomT = entry.getKey();
+                JsonArray productes = entry.getValue();
+                String sponsor = tipusS.obtenerSponsor(nomT);
+                boolean trobat = false;
 
+                for (int i = 0; i < productes.size(); i++) {
+                    for (int j = 0; j < productes.size(); j++) {
+                        JsonObject carret = productes.get(j).getAsJsonObject();
+                        if (sponsor != null && carret.get("marca").getAsString().equals(sponsor)) {
+                            trobat = true;
+                        }
+                    }
+                    JsonObject carret = productes.get(i).getAsJsonObject();
+                    String categoria = carret.get("categoria").getAsString();
+                    float preu = carret.get("preu").getAsFloat();
+                    float preuImpostos = 0;
 
-                switch (categoria){
-                    case "General":
-                        preuImpostos= (float) ((preu)/(1+0.21));
+                    if(trobat){
+                        preu = (float) ((preu) / (1 + 0.1));
+                    }
 
-                        break;
-                    case "Reduced Taxes":
-
-                        JsonArray llistaValoracions = new JsonArray();
-                        float mitjana = 0;
-                        llistaValoracions = tipusP.llistarValoracions(carret.get("nomProducte").getAsString());
-                        if(llistaValoracions != null) {
-                            int sumaEstrelles = 0;
-                            for (int j = 0; j < llistaValoracions.size(); j++) {
-                                JsonObject valoracio = llistaValoracions.get(j).getAsJsonObject();
-                                int estrelles = valoracio.get("estrelles").getAsInt();
-                                sumaEstrelles += estrelles;
+                    switch (categoria) {
+                        case "General":
+                            preuImpostos = (float) ((preu) / (1 + 0.21));
+                            break;
+                        case "Reduced Taxes":
+                            JsonArray llistaValoracions = tipusP.llistarValoracions(carret.get("nomProducte").getAsString());
+                            float mitjana = 0;
+                            if (llistaValoracions != null) {
+                                int sumaEstrelles = 0;
+                                for (int j = 0; j < llistaValoracions.size(); j++) {
+                                    JsonObject valoracio = llistaValoracions.get(j).getAsJsonObject();
+                                    int estrelles = valoracio.get("estrelles").getAsInt();
+                                    sumaEstrelles += estrelles;
+                                }
+                                mitjana = (float) sumaEstrelles / llistaValoracions.size();
                             }
-                            mitjana = (float) sumaEstrelles / llistaValoracions.size();
-                        }
-                        if(mitjana > 3.5){
-                            preuImpostos= (float) ((preu)/(1+0.05));
-                        }else{
-                            preuImpostos= (float) ((preu)/(1+0.1));
-                        }
-                        break;
-                    case "Superreduced Taxes":
-                        if(preuImpostos>=100){
-                            preuImpostos= (float) ((preu)/(1+0.04));
-                        }
-                        break;
-                }
+                            if (mitjana > 3.5) {
+                                preuImpostos = (float) ((preu) / (1 + 0.05));
+                            } else {
+                                preuImpostos = (float) ((preu) / (1 + 0.1));
+                            }
+                            break;
+                        case "Superreduced Taxes":
+                            if (preu >= 100) {
+                                preuImpostos = (float) ((preu) / (1 + 0.04));
+                            }
+                            break;
+                    }
 
-                float ingresos = tipusS.actualitzarIngresos(nomT, preuImpostos);
-                presentationController.getVista().ingresosActualitzats(nomT, preuImpostos, ingresos);
-                productesCarret.remove(i);
+                    preuTot += preuImpostos;
+                    productesCarret.remove(i);
+                }
+                float ingresos = tipusS.actualitzarIngresos(nomT, preuTot);
+                presentationController.getVista().ingresosActualitzats(nomT, preuTot, ingresos);
             }
-            for(int i = 0; i < productesCarret.size(); i++){
-                productesCarret.remove(i);
-            }
-        }else{
+
+            productesCarret.clear();
+        } else {
             startProgram();
         }
     }

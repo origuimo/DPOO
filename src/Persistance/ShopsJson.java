@@ -289,5 +289,31 @@ public class ShopsJson implements ShopsDAO{
         return ingresos;
     }
 
+    public String obtenerSponsor(String nomTenda) {
+        String sponsor = null;
 
+            Path filePath = Paths.get("src/Arxius/shops.json");
+
+            try (Reader reader = Files.newBufferedReader(filePath)) {
+                Gson gson = new Gson();
+
+                JsonArray jsonArray = gson.fromJson(reader, JsonArray.class);
+
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JsonObject tenda = jsonArray.get(i).getAsJsonObject();
+                    String name = tenda.get("name").getAsString();
+
+                    if (name.equals(nomTenda)) {
+                        if (tenda.has("sponsor")) {
+                            sponsor = tenda.get("sponsor").getAsString();
+                        }
+                        break;
+                    }
+                }
+            }catch (Exception e) {
+              e.printStackTrace();
+            }
+
+        return sponsor;
+    }
 }

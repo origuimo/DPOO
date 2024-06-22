@@ -76,4 +76,6 @@ public interface ShopsDAO {
      * @return Nuevo monto de ingresos de la tienda.
      */
     float actualitzarIngresos(String nomT, float carret);
+
+    String obtenerSponsor(String nomTenda);
 }
