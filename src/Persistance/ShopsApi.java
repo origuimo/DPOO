@@ -434,6 +434,7 @@ public class ShopsApi implements ShopsDAO{
         JsonObject tendaPerActualitzar = null;
         float earningsActual = 0.0f;
         float earningsActualizado = 0.0f;
+        int posicioTenda = -1;
 
         try {
             // Crear la URL para obtener todas las tiendas
@@ -457,36 +458,48 @@ public class ShopsApi implements ShopsDAO{
                 if (name.equals(nomTenda)) {
                     tendaPerActualitzar = tenda;
                     earningsActual = tenda.get("earnings").getAsFloat();
+                    posicioTenda = i;
                     break;
                 }
             }
 
-            if (tendaPerActualitzar != null) {
+            if (tendaPerActualitzar != null && posicioTenda != -1) {
                 // Sumar los nuevos ingresos a los ingresos actuales
                 earningsActualizado = earningsActual + nuevosIngresos;
                 tendaPerActualitzar.addProperty("earnings", earningsActualizado);
 
-                // URL para actualizar la tienda (POST)
-                URL postUrl = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
-                HttpURLConnection postConnection = (HttpURLConnection) postUrl.openConnection();
-                postConnection.setRequestMethod("POST");
-                postConnection.setRequestProperty("Content-Type", "application/json");
-                postConnection.setDoOutput(true);
+                // Eliminar la tienda original
+                URL deleteUrl = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops/" + posicioTenda);
+                HttpURLConnection deleteConnection = (HttpURLConnection) deleteUrl.openConnection();
+                deleteConnection.setRequestMethod("DELETE");
+                int deleteResponseCode = deleteConnection.getResponseCode();
+                deleteConnection.disconnect();
 
-                OutputStream os = postConnection.getOutputStream();
-                os.write(tendaPerActualitzar.toString().getBytes());
-                os.flush();
-                os.close();
+                if (deleteResponseCode == HttpURLConnection.HTTP_OK) {
+                    // URL para recrear la tienda
+                    URL postUrl = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
+                    HttpURLConnection postConnection = (HttpURLConnection) postUrl.openConnection();
+                    postConnection.setRequestMethod("POST");
+                    postConnection.setRequestProperty("Content-Type", "application/json");
+                    postConnection.setDoOutput(true);
 
-                int postResponseCode = postConnection.getResponseCode();
+                    OutputStream os = postConnection.getOutputStream();
+                    os.write(tendaPerActualitzar.toString().getBytes());
+                    os.flush();
+                    os.close();
 
-                if (postResponseCode == HttpURLConnection.HTTP_OK || postResponseCode == HttpURLConnection.HTTP_CREATED) {
-                    System.out.println("Los ingresos se han actualizado correctamente.");
+                    int postResponseCode = postConnection.getResponseCode();
+
+                    if (postResponseCode == HttpURLConnection.HTTP_OK || postResponseCode == HttpURLConnection.HTTP_CREATED) {
+                        System.out.println("Los ingresos se han actualizado correctamente.");
+                    } else {
+                        System.out.println("Error al actualizar los ingresos. Código de respuesta: " + postResponseCode);
+                    }
+
+                    postConnection.disconnect();
                 } else {
-                    System.out.println("Error al actualizar los ingresos. Código de respuesta: " + postResponseCode);
+                    System.out.println("Error al eliminar la tienda original. Código de respuesta: " + deleteResponseCode);
                 }
-
-                postConnection.disconnect();
             } else {
                 System.out.println("La tienda especificada no se encontró.");
             }

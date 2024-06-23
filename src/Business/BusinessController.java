@@ -663,20 +663,21 @@ public class BusinessController {
         String confirmar = scanner.nextLine();
         if(confirmar.equalsIgnoreCase("yes")){
             Map<String, JsonArray> productesPerTenda = separarProdyctesPerTenda(productesCarret);
-            float preuTot = 0;
             for (Map.Entry<String, JsonArray> entry : productesPerTenda.entrySet()) {
                 String nomT = entry.getKey();
                 JsonArray productes = entry.getValue();
                 String sponsor = tipusS.obtenerSponsor(nomT);
                 boolean trobat = false;
 
-                for (int i = 0; i < productes.size(); i++) {
-                    for (int j = 0; j < productes.size(); j++) {
-                        JsonObject carret = productes.get(j).getAsJsonObject();
-                        if (sponsor != null && carret.get("marca").getAsString().equals(sponsor)) {
-                            trobat = true;
-                        }
+                for (int j = 0; j < productes.size(); j++) {
+                    JsonObject carret = productes.get(j).getAsJsonObject();
+                    if (sponsor != null && carret.get("marca").getAsString().equals(sponsor)) {
+                        trobat = true;
+                        break;
                     }
+                }
+                float preuTotPerTenda = 0;
+                for (int i = 0; i < productes.size(); i++) {
                     JsonObject carret = productes.get(i).getAsJsonObject();
                     String categoria = carret.get("categoria").getAsString();
                     float preu = carret.get("preu").getAsFloat();
@@ -709,20 +710,21 @@ public class BusinessController {
                             }
                             break;
                         case "Superreduced Taxes":
-                            if (preu >= 100) {
+                            if (preu <= 100) {
                                 preuImpostos = (float) ((preu) / (1 + 0.04));
                             }
                             break;
                     }
 
-                    preuTot += preuImpostos;
-                    productesCarret.remove(i);
+                    preuTotPerTenda += preuImpostos;
                 }
-                float ingresos = tipusS.actualitzarIngresos(nomT, preuTot);
-                presentationController.getVista().ingresosActualitzats(nomT, preuTot, ingresos);
+                float ingresos = tipusS.actualitzarIngresos(nomT, preuTotPerTenda);
+                presentationController.getVista().ingresosActualitzats(nomT, preuTotPerTenda, ingresos);
+            }
+            while (productesCarret.size() > 0) {
+                productesCarret.remove(0);
             }
 
-            productesCarret.clear();
         } else {
             startProgram();
         }
