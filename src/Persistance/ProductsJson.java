@@ -197,6 +197,12 @@ public class ProductsJson implements ProductsDAO {
 
     }
 
+    /**
+     * Obtiene la categoría de un producto especificado por su nombre.
+     *
+     * @param nomP Nombre del producto del cual se desea obtener la categoría.
+     * @return retorna la categoría del producto en formato String. Devuelve null si no se encuentra el producto o si ocurre un error de lectura.
+     */
     @Override
     public String obtenirCategoria(String nomP){
         Path filePath = Paths.get("src/Arxius/products.json");

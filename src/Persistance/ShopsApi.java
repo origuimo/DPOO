@@ -16,6 +16,16 @@ import java.net.URL;
 import static Persistance.ProductsApi.readJsonArrayResponse;
 
 public class ShopsApi implements ShopsDAO{
+
+    /**
+     * Comprova si existeix una botiga amb el nom de tenda especificat.
+     *
+     * Aquest mètode fa una sol·licitud GET per obtenir totes les botigues,
+     * i verifica si alguna d'elles té el nom especificat.
+     *
+     * @param nom és el nom de la botiga a verificar
+     * @return true si existeix una botiga amb el nom especificat, false si no existeix.
+     */
     @Override
     public boolean comprovarExistenciaTenda(String nom) {
         try {
@@ -60,6 +70,15 @@ public class ShopsApi implements ShopsDAO{
     }
 
 
+    /**
+     * Afegeix una nova tenda al sistema amb una sol·licitud POST a l'API.
+     *
+     * Aquest mètode envia una sol·licitud POST a l'API per afegir una nova tenda al sistema.
+     * Converteix l'objecte Tenda a un format JSON abans d'enviar-lo com a body de la sol·licitud.
+     *
+     * @param tenda l'objecte Tenda a afegir al sistema
+     * @return true si la tenda s'ha afegit amb èxit, false si hi ha hagut algun error durant la sol·licitud
+     */
     @Override
     public boolean afegirTenda(Tenda tenda) {
         try {
@@ -105,6 +124,17 @@ public class ShopsApi implements ShopsDAO{
     }
 
 
+    /**
+     * Verifica la consistència del preu d'un producte en una tenda específica.
+     *
+     * Aquest mètode verifica si el preu d'un producte específic en una tenda coincideix amb un nou preu donat.
+     * Realitza una sol·licitud GET a l'API per obtenir les tendes i el seu catàleg de productes.
+     *
+     * @param nomT el nom de la tenda en què es vol verificar el preu del producte
+     * @param nomP el nom del producte del qual es vol verificar el preu
+     * @param preuNou el nou preu a comparar amb el preu actual del producte
+     * @return true si el preu del producte és consistent amb el preu nou, false altrament o si hi ha errors durant la sol·licitud
+     */
     @Override
     public boolean consistenciaPreu(String nomT, String nomP, float preuNou) {
         try {
@@ -164,6 +194,15 @@ public class ShopsApi implements ShopsDAO{
         return false;
     }
 
+    /**
+     * Actualitza el catàleg d'una tenda amb un nou producte específic.
+     *
+     * Aquest mètode modifica el catàleg d'una tenda específica amb un nou producte,
+     * afegint-lo al catàleg de la tenda.
+     *
+     * @param nomTenda el nom de la tenda on es vol actualitzar el catàleg
+     * @param producte l'objecte ProducteCataleg que representa el nou producte a afegir
+     */
     @Override
     public void actualitzarCataleg(String nomTenda, ProducteCataleg producte) {
         JsonObject tendaPerActualitzar = null;
@@ -242,6 +281,15 @@ public class ShopsApi implements ShopsDAO{
     }
 
 
+    /**
+     * Retorna el catàleg de productes d'una tenda específica.
+     *
+     * Aquest mètode obté el catàleg de productes d'una tenda específica
+     * a partir del nom de la tenda proporcionat.
+     *
+     * @param nomT el nom de la tenda de la qual es vol obtenir el catàleg
+     * @return un JsonArray amb el catàleg de productes de la tenda, o null si no s'ha trobat la tenda
+     */
     @Override
     public JsonArray productesCataleg(String nomT) {
         try {
@@ -272,6 +320,15 @@ public class ShopsApi implements ShopsDAO{
         return null;
     }
 
+    /**
+     * Elimina un producte del catàleg d'una tenda especificada.
+     *
+     * Aquest mètode elimina un producte del catàleg d'una tenda específica
+     * a partir del número d'índex del producte i el nom de la tenda.
+     *
+     * @param num número d'índex del producte a eliminar
+     * @param nomT nom de la tenda de la qual s'eliminarà el producte
+     */
     @Override
     public void eliminarProdCataleg(int num, String nomT) {
         int posicioTenda = -1;
@@ -345,6 +402,12 @@ public class ShopsApi implements ShopsDAO{
         }
     }
 
+    /**
+     * Retorna una llista de botigues que contenen un producte especificat en el seu catàleg.
+     *
+     * @param nomProducte el nom del producte a cercar en les botigues.
+     * @return un JsonArray amb la informació de les botigues que contenen el producte especificat.
+     */
     @Override
     public JsonArray productesTenda(String nomProducte) {
         JsonArray resultArray = new JsonArray();
@@ -394,9 +457,14 @@ public class ShopsApi implements ShopsDAO{
         return resultArray;
     }
 
-
-
-
+    /**
+     * Retorna una llista de totes les botigues disponibles.
+     *
+     * Aquest mètode fa una sol·licitud GET a l'API per obtenir un llistat de totes les botigues
+     * i les retorna com un JsonArray.
+     *
+     * @return un JsonArray amb la informació de totes les botigues.
+     */
     @Override
     public JsonArray llistaTendes(){
         JsonArray jsonArray = new JsonArray();
@@ -429,6 +497,17 @@ public class ShopsApi implements ShopsDAO{
     }
 
 
+    /**
+     * Actualitza els ingressos d'una botiga especificada sumant els nous ingressos als ingressos actuals.
+     *
+     * Aquest mètode obté la informació de totes les botigues, cerca la botiga especificada pel seu nom,
+     * actualitza els seus ingressos sumant els nous ingressos proporcionats, i finalment recrea la botiga
+     * amb els ingressos actualitzats.
+     *
+     * @param nomTenda el nom de la botiga els ingressos de la qual s'han d'actualitzar
+     * @param nuevosIngresos els nous ingressos que s'han d'afegir als ingressos actuals de la botiga
+     * @return el valor dels ingressos actualitzats després de sumar els nous ingressos
+     */
     @Override
     public float actualitzarIngresos(String nomTenda, float nuevosIngresos) {
         JsonObject tendaPerActualitzar = null;
@@ -512,6 +591,16 @@ public class ShopsApi implements ShopsDAO{
 
         return earningsActualizado;
     }
+
+    /**
+     * Obté el nom del patrocinador d'una botiga especificada pel seu nom.
+     *
+     * Aquest mètode fa una sol·licitud GET per obtenir totes les botigues,
+     * cerca la botiga especificada pel seu nom, i retorna el nom del seu patrocinador si existeix.
+     *
+     * @param nomTenda el nom de la botiga de la qual es vol obtenir el patrocinador
+     * @return el nom del patrocinador de la botiga especificada, o null si no té patrocinador o no es troba la botiga
+     */
     @Override
     public String obtenerSponsor(String nomTenda){
         String sponsor = null;

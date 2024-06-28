@@ -289,6 +289,12 @@ public class ShopsJson implements ShopsDAO{
         return ingresos;
     }
 
+    /**
+     * Obtiene el sponsor de una tienda específica.
+     *
+     * @param nomTenda es el Nombre de la tienda de la cual se desea obtener el patrocinador.
+     * @return nombre de tipo String es el nombre del patrocinador de la tienda. Devuelve null si la tienda no tiene patrocinador o si ocurre un error.
+     */
     public String obtenerSponsor(String nomTenda) {
         String sponsor = null;
 

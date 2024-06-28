@@ -77,5 +77,10 @@ public interface ShopsDAO {
      */
     float actualitzarIngresos(String nomT, float carret);
 
+    /**
+     * Obtiene el sponsor de una tienda específica.
+     * @param nomTenda es el nombre de la tienda que le pasamos.
+     * @return retorna un String con el nombre del sponsor.
+     */
     String obtenerSponsor(String nomTenda);
 }

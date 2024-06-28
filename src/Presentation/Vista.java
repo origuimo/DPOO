@@ -551,22 +551,37 @@ public class Vista {
         System.out.println("No hay coincidencias con esta consulta\n");
     }
 
+    /**
+     * Muestra un mensaje indicando que la API no está disponible.
+     */
     public void errorApi(){
         System.out.println("Error: The API isn’t available.\n");
     }
 
+    /**
+     * Muestra un mensaje indicando que es necesario añadir un nombre a la tienda.
+     */
     public void errorNomTenda1(){
         System.out.println("Error: Es necesario añadir un nombre a la tienda\n");
     }
 
+    /**
+     * Muestra un mensaje indicando que se debe introducir un número de estrellas válido (de 1 a 5 estrellas).
+     */
     public void errorAst(){
         System.out.println("Introdueix un número d'estrelles vàlid (de 1 a 5 estrelles).\n");
     }
 
+    /**
+     * Muestra un mensaje indicando que el comentario no puede estar vacío.
+     */
     public void comentariBuit(){
         System.out.println("El comentario no puede estar vacio\n");
     }
 
+    /**
+     * Muestra un mensaje indicando que no hay tiendas disponibles.
+     */
     public void noTendesAvailable() { System.out.println("No hay tiendas disponibles");
     }
 }

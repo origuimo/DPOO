@@ -54,6 +54,11 @@ public interface ProductsDAO {
      */
     String obtenirMarca(String nomP);
 
+    /**
+     *
+     * @param nomP es el nombre del producto selccionado
+     * @return retornamos el tipo de Categoria en formato String.
+     */
     String obtenirCategoria(String nomP);
 
     /**

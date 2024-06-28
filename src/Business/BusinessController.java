@@ -639,6 +639,12 @@ public class BusinessController {
         }
     }
 
+    /**
+     * Método privado que separa los productos por tienda a partir de un arreglo de productos en formato JSON.
+     *
+     * @param productes Arreglo JSON de productos con información de la tienda a la que pertenecen.
+     * @return Mapa que contiene como clave el nombre de la tienda y como valor un arreglo JSON con los productos de dicha tienda.
+     */
     private Map<String, JsonArray> separarProdyctesPerTenda(JsonArray productes){
         Map<String, JsonArray> productosPorTienda = new HashMap<>();
         for(int i = 0; i < productesCarret.size(); i++) {
