@@ -636,7 +636,7 @@ public class BusinessController {
         presentationController.getVista().menuCarret();
         int opt = errorInt();
         switch (opt){
-            case 1 -> finalitzarCompra(preu);
+            case 1 -> finalitzarCompra();
             case 2 -> buidarCarret();
         }
     }
@@ -666,7 +666,7 @@ public class BusinessController {
      * Finaliza la compra, actualiza los ingresos de las tiendas y limpia el carrito de compras.
      * @throws InputMismatchException si la entrada no es un número.
      */
-    private void finalitzarCompra(float preuCarret){
+    private void finalitzarCompra(){
         presentationController.getVista().confirmarCompra();
         String confirmar = scanner.nextLine();
         if(confirmar.equalsIgnoreCase("yes")){
@@ -680,19 +680,24 @@ public class BusinessController {
 
                 for (int j = 0; j < productes.size(); j++) {
                     JsonObject carret = productes.get(j).getAsJsonObject();
-                    if (sponsor != null && carret.get("marca").getAsString().equals(sponsor)) {
+                    if (sponsor != null && carret.get("marca").getAsString().equalsIgnoreCase(sponsor)) {
                         isSponsoredShop = true;
                         break;
                     }
                 }
 
-                float gastat = gastatPerTenda.get(nomT);
-                if(loyaltyThreshold != -1 && gastat > loyaltyThreshold){
-                    for (int j = 0; j < productes.size(); j++) {
-                        JsonObject carret = productes.get(j).getAsJsonObject();
-                        float preu = carret.get("preu").getAsFloat();
-                        float preuSenseTax = calcularPreuSenseTax(preu, carret);
-                        carret.addProperty("preu", preuSenseTax);
+                if(loyaltyThreshold != -1){
+                    float gastat = 0;
+                    if (gastatPerTenda.containsKey(nomT)) {
+                        gastat = gastatPerTenda.get(nomT);
+                    }
+                    if(gastat > loyaltyThreshold){
+                        for (int j = 0; j < productes.size(); j++) {
+                            JsonObject carret = productes.get(j).getAsJsonObject();
+                            float preu = carret.get("preu").getAsFloat();
+                            float preuSenseTax = calcularPreuSenseTax(preu, carret);
+                            carret.addProperty("preu", preuSenseTax);
+                        }
                     }
                 }
 
@@ -730,6 +735,13 @@ public class BusinessController {
         }
     }
 
+    /**
+     * Agafa el preu que se li passa per paràmetre i depenent de la categoria del producte se li resta el % de IVA coorresponent.
+     *
+     * @param preu Preu a truere el IVA
+     * @param carret Arreglo JSON de productos con información de la tienda a la que pertenecen.
+     * @return Mapa que contiene como clave el nombre de la tienda y como valor un arreglo JSON con los productos de dicha tienda.
+     */
     private float calcularPreuSenseTax(float preu, JsonObject carret) {
         String categoria = carret.get("categoria").getAsString();
         float preuSenseTax = 0;

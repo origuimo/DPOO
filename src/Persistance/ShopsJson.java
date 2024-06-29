@@ -323,6 +323,12 @@ public class ShopsJson implements ShopsDAO{
         return sponsor;
     }
 
+    /**
+     * Obté el número de llindar d'una botiga especificada pel seu nom.
+     *
+     * @param nomTenda el nom de la botiga de la qual es vol obtenir el patrocinador
+     * @return el número del llindar de la botiga especificada, o -1 si no té llindar o no es troba la botiga
+     */
     public float obtenerThreshold(String nomTenda) {
         float loyaltyThreshold = 0;
 

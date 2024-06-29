@@ -84,5 +84,10 @@ public interface ShopsDAO {
      */
     String obtenerSponsor(String nomTenda);
 
+    /**
+     * Obtiene el threshold de una tienda específica.
+     * @param nomTenda es el nombre de la tienda que le pasamos.
+     * @return retorna un float con el numero del threshold.
+     */
     float obtenerThreshold(String nomTenda);
 }
