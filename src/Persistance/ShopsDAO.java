@@ -83,4 +83,6 @@ public interface ShopsDAO {
      * @return retorna un String con el nombre del sponsor.
      */
     String obtenerSponsor(String nomTenda);
+
+    float obtenerThreshold(String nomTenda);
 }

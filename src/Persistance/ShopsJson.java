@@ -322,4 +322,34 @@ public class ShopsJson implements ShopsDAO{
 
         return sponsor;
     }
+
+    public float obtenerThreshold(String nomTenda) {
+        float loyaltyThreshold = 0;
+
+        Path filePath = Paths.get("src/Arxius/shops.json");
+
+        try (Reader reader = Files.newBufferedReader(filePath)) {
+            Gson gson = new Gson();
+
+            JsonArray jsonArray = gson.fromJson(reader, JsonArray.class);
+
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject tenda = jsonArray.get(i).getAsJsonObject();
+                String name = tenda.get("name").getAsString();
+
+                if (name.equals(nomTenda)) {
+                    if (tenda.has("loyaltyThreshold")) {
+                        loyaltyThreshold = tenda.get("loyaltyThreshold").getAsFloat();
+                    }else{
+                        loyaltyThreshold = -1;
+                    }
+                    break;
+                }
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return loyaltyThreshold;
+    }
 }

@@ -639,4 +639,44 @@ public class ShopsApi implements ShopsDAO{
 
         return sponsor;
     }
+
+    public float obtenerThreshold(String nomTenda){
+        float loyaltyThreshold = 0;
+
+        try {
+            // Crear la URL para obtener todas las tiendas
+            URL url = new URL("https://balandrau.salle.url.edu/dpoo/S1-Project_115/shops");
+
+            // Abrir conexión
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // Configurar la conexión para una solicitud GET
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            // Leer la respuesta JSON en un JsonArray
+            JsonArray jsonArray = readJsonArrayResponse(connection);
+
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject tenda = jsonArray.get(i).getAsJsonObject();
+                String name = tenda.get("name").getAsString();
+
+                if (name.equals(nomTenda)) {
+                    if (tenda.has("loyaltyThreshold")) {
+                        loyaltyThreshold = tenda.get("loyaltyThreshold").getAsFloat();
+                    }else{
+                        loyaltyThreshold = -1;
+                    }
+                    break;
+                }
+            }
+            connection.disconnect();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return loyaltyThreshold;
+    }
 }
