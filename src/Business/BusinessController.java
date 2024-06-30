@@ -187,7 +187,7 @@ public class BusinessController {
 
     /**
      * Elimina productos del catálogo y solicita confirmación al usuario antes de realizar la operación.
-     * @throws InputMismatchException si la entrada no es un número.
+     *
      */
     private void eliminacioProductes(){
         presentationController.getVista().productesDisponibles();
@@ -248,7 +248,7 @@ public class BusinessController {
 
     /**
      * Gestiona las opciones relacionadas con las tiendas, como crear, expandir o reducir el catálogo de una tienda.
-     * @throws InputMismatchException si la entrada no es un número.
+     *
      */
     private void gestioDeTendes(){
         presentationController.getVista().menuTenda();
@@ -264,7 +264,7 @@ public class BusinessController {
 
     /**
      * Crea una nueva tienda solicitando la información necesaria al usuario.
-     * @throws InputMismatchException si la entrada no es un número.
+     *
      */
     private void creacioTenda(){
         presentationController.getVista().nomTenda();
@@ -322,7 +322,7 @@ public class BusinessController {
 
     /**
      * Expande el catálogo de una tienda solicitando información sobre el producto a agregar.
-     * @throws InputMismatchException si la entrada no es un número.
+     *
      */
     private void expancioCataleg(){
         presentationController.getVista().nomTenda();
@@ -360,7 +360,7 @@ public class BusinessController {
 
     /**
      * Reduce el catálogo de una tienda eliminando productos y solicita confirmación al usuario.
-     * @throws InputMismatchException si la entrada no es un número.
+     *
      */
     private void reduccioCataleg() {
         presentationController.getVista().nomTenda();
@@ -407,7 +407,7 @@ public class BusinessController {
     /**
      * Realiza una búsqueda de productos por nombre y muestra información detallada, permitiendo al usuario
      * ver valoraciones, agregar nuevas valoraciones o añadir productos al carrito.
-     * @throws InputMismatchException si la entrada no es un número.
+     *
      */
     private void cercaDeProductes(){
         presentationController.getVista().query();
@@ -520,7 +520,7 @@ public class BusinessController {
 
     /**
      * Muestra la lista de tiendas disponibles y sus catálogos, permitiendo al usuario explorar la información y realizar acciones.
-     * @throws InputMismatchException si la entrada no es un número.
+     *
      */
     private void llistarTendes() {
         JsonArray tendes = tipusS.llistaTendes();
@@ -621,7 +621,7 @@ public class BusinessController {
     /**
      * Gestiona el contenido del carrito de compras, mostrando los productos, su precio total y permitiendo
      * al usuario finalizar la compra o vaciar el carrito.
-     * @throws InputMismatchException si la entrada no es un número.
+     *
      */
     private void gestioCarret(){
         presentationController.getVista().contingutCarret();
@@ -664,7 +664,7 @@ public class BusinessController {
 
     /**
      * Finaliza la compra, actualiza los ingresos de las tiendas y limpia el carrito de compras.
-     * @throws InputMismatchException si la entrada no es un número.
+     *
      */
     private void finalitzarCompra(){
         presentationController.getVista().confirmarCompra();
@@ -779,7 +779,7 @@ public class BusinessController {
     }
     /**
      * Vacía el carrito de compras después de solicitar confirmación al usuario.
-     * @throws InputMismatchException si la entrada no es un número.
+     *
      */
     private void buidarCarret(){
         presentationController.getVista().buidarCarret();
